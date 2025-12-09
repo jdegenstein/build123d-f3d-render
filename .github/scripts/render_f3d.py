@@ -70,7 +70,8 @@ def render_with_f3d(file_path):
             "f3d", temp_step,
             f"--output={output_png}",
             "--resolution=1024,768",
-            "--samples=32",
+            "--raytracing",
+            "--raytracing-samples=32",
             "--up=+Z",
             "--verbose=quiet" 
         ]
