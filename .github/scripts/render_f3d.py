@@ -70,8 +70,9 @@ def render_with_f3d(file_path):
             "f3d", temp_step,
             f"--output={output_png}",
             "--resolution=1024,768",
-            "--raytracing",
-            "--raytracing-samples=32",
+            #"--raytracing", # raytracing looked black
+            #"--raytracing-samples=32",
+            "--anti-aliasing",
             "--up=+Z",
             "--verbose=quiet" 
         ]
