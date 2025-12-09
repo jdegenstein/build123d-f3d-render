@@ -22,7 +22,7 @@ jobs:
       - name: Install F3D & System Deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y f3d xvfb libgl1 libglx-mesa0
+          sudo apt-get install -y xvfb libgl1 libglx-mesa0
 
       # 2. Setup uv
       - name: Install uv
@@ -36,7 +36,7 @@ jobs:
         run: |
           uv venv --python 3.12
           # Install build123d (and any other libs your models need)
-          uv pip install build123d
+          uv pip install build123d f3d
 
       # 4. Generate Renders
       #    xvfb-run creates the virtual display.
