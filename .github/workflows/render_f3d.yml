@@ -22,7 +22,7 @@ jobs:
       - name: Install F3D & System Deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y f3d xvfb libgl1-mesa-glx
+          sudo apt-get install -y f3d xvfb libgl1 libglx-mesa0
 
       # 2. Setup uv
       - name: Install uv
