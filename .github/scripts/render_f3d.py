@@ -2,12 +2,46 @@ import os
 import subprocess
 import importlib.util
 from pathlib import Path
-from build123d import *
+from build123d import * # Import everything to check types
+
+def get_renderable_object(module):
+    """
+    Intelligently find the object to export.
+    Priority:
+    1. Explicit 'to_export' variable
+    2. Explicit 'result', 'part', or 'assembly' variable
+    3. The last variable defined that is a valid Shape or Sketch
+    """
+    # 1. Check for explicit overrides first (Convention over Configuration)
+    for name in ['to_export', 'result', 'part', 'assembly']:
+        if hasattr(module, name):
+            candidate = getattr(module, name)
+            if isinstance(candidate, (Shape, Sketch)):
+                return candidate
+
+    # 2. Dynamic Discovery: Scan all variables in the module
+    #    This catches 'my_custom_gear = ...'
+    candidates = []
+    for name, obj in vars(module).items():
+        # Skip private/dunder variables and imports (modules)
+        if name.startswith("_") or isinstance(obj, type(os)):
+            continue
+            
+        # Check if it's a build123d topology object
+        # Shape covers: Solid, Compound, Wire, Edge, Vertex, etc.
+        if isinstance(obj, (Shape, Sketch)):
+            candidates.append(obj)
+            
+    if candidates:
+        # Return the last valid object found.
+        # In Python scripts, the final result is usually defined last.
+        return candidates[-1]
+        
+    return None
 
 def render_with_f3d(file_path):
     print(f"Processing {file_path}...")
     
-    # 1. Load the user's script dynamically
     spec = importlib.util.spec_from_file_location("user_model", file_path)
     module = importlib.util.module_from_spec(spec)
     
@@ -17,36 +51,25 @@ def render_with_f3d(file_path):
         print(f"  [!] Failed to execute script: {e}")
         return
 
-    # 2. Find the object (part, assembly, or sketch)
-    render_target = None
-    for name in ['to_export', 'part', 'assembly', 'sketch', 'line']:
-        if hasattr(module, name):
-            render_target = getattr(module, name)
-            break
+    render_target = get_renderable_object(module)
             
     if not render_target:
-        print("  [!] No renderable object found.")
+        print("  [!] No 3D shape found in script.")
         return
 
-    # 3. Export to STEP (Critical for wires/edges)
-    #    STEP preserves exact curves, unlike STL which meshes them.
+    # Export to STEP (Preserves curves/wires)
     temp_step = "temp_render.step"
     try:
         export_step(render_target, temp_step)
         
-        # 4. Run F3D Headless
         output_png = file_path.with_suffix('.png')
         
-        # F3D Command Line Flags:
-        # --output: Where to save
-        # --resolution: Image size
-        # --samples: Anti-aliasing quality (higher is better)
-        # --up: Camera orientation (Z-up is standard for build123d)
+        # F3D Render Command
         cmd = [
             "f3d", temp_step,
             f"--output={output_png}",
             "--resolution=1024,768",
-            "--samples=16", 
+            "--samples=32", 
             "--up=+Z",
             "--verbose=quiet" 
         ]
@@ -62,9 +85,11 @@ def render_with_f3d(file_path):
 
 def main():
     repo_root = Path(".")
+    ignored_dirs = {'.git', '.github', '.venv', 'venv', '__pycache__'}
+
     for root, dirs, files in os.walk(repo_root):
-        if ".git" in root or ".github" in root:
-            continue
+        dirs[:] = [d for d in dirs if d not in ignored_dirs]
+        
         for file in files:
             if file.endswith(".py") and file != "setup.py":
                 render_with_f3d(Path(root) / file)
