@@ -1,0 +1,52 @@
+name: Render Models with F3D
+
+on:
+  push:
+    paths:
+      - '**/*.py'
+      - '.github/workflows/render_f3d.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      # 1. Install System Dependencies (F3D + Xvfb)
+      #    uv manages Python, but F3D is a system binary we still need from apt.
+      - name: Install F3D & System Deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y f3d xvfb libgl1-mesa-glx
+
+      # 2. Setup uv
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "**/*.py" # Invalidate cache if python files change significantly
+
+      # 3. Create Environment & Install Libraries
+      - name: Install Python Dependencies
+        run: |
+          uv venv --python 3.12
+          # Install build123d (and any other libs your models need)
+          uv pip install build123d
+
+      # 4. Generate Renders
+      #    xvfb-run creates the virtual display.
+      #    'uv run' ensures we use the python environment we just created.
+      - name: Generate Renders
+        run: xvfb-run -a uv run python .github/scripts/render_f3d.py
+
+      # 5. Commit Images
+      - name: Commit Renders
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "📸 Auto-generate F3D renders"
+          file_pattern: "**/*.png"
