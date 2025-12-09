@@ -1,3 +1,3 @@
 # Example Model: OCC Bottle (w/o threads)
 
-![OCC Bottle](example-model/model.png)
+![OCC Bottle](model.png)
