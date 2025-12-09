@@ -31,7 +31,10 @@ jobs:
           tar -xvf f3d.tar.gz
           # Move binary and libs to system locations so 'f3d' command works globally
           sudo cp -r F3D-3.3.0-Linux-x86_64/* /usr/local/
+          # prevent F3D images from being used later by commit renders by deleting F3D folder
+          sudo rm -rf F3D-3.3.0-Linux-x86_64/
           f3d --version
+          f3d --help
 
       # 3. Setup uv
       - name: Install uv
