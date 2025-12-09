@@ -19,32 +19,41 @@ jobs:
       
       # 1. Install System Dependencies (F3D + Xvfb)
       #    uv manages Python, but F3D is a system binary we still need from apt.
-      - name: Install F3D & System Deps
+      - name: Install System Deps
         run: |
           sudo apt-get update
           sudo apt-get install -y xvfb libgl1 libglx-mesa0
 
-      # 2. Setup uv
+      # 2. Install F3D Manually (Direct Binary)
+      - name: Install F3D v3.3.0
+        run: |
+          wget "https://github.com/f3d-app/f3d/releases/download/v3.3.0/F3D-3.3.0-Linux-x86_64.tar.gz" -O f3d.tar.gz
+          tar -xvf f3d.tar.gz
+          # Move binary and libs to system locations so 'f3d' command works globally
+          sudo cp -r F3D-3.3.0-Linux-x86_64/* /usr/local/
+          f3d --version
+
+      # 3. Setup uv
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
           cache-dependency-glob: "**/*.py" # Invalidate cache if python files change significantly
 
-      # 3. Create Environment & Install Libraries
+      # 4. Create Environment & Install Libraries
       - name: Install Python Dependencies
         run: |
           uv venv --python 3.12
           # Install build123d (and any other libs your models need)
-          uv pip install build123d f3d
+          uv pip install build123d
 
-      # 4. Generate Renders
+      # 5. Generate Renders
       #    xvfb-run creates the virtual display.
       #    'uv run' ensures we use the python environment we just created.
       - name: Generate Renders
         run: xvfb-run -a uv run python .github/scripts/render_f3d.py
 
-      # 5. Commit Images
+      # 6. Commit Images
       - name: Commit Renders
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
