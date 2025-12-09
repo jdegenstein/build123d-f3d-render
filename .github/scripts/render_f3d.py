@@ -72,7 +72,7 @@ def render_with_f3d(file_path):
             "--resolution=1024,768",
             "--samples=32", 
             "--up=+Z",
-            "--verbose=quiet" 
+            "--quiet" 
         ]
         
         subprocess.run(cmd, check=True)
