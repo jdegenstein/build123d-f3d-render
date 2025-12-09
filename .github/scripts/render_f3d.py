@@ -3,6 +3,7 @@ import subprocess
 import importlib.util
 from pathlib import Path
 from build123d import * # Import everything to check types
+from build123d import Shape
 
 def get_renderable_object(module):
     """
@@ -16,7 +17,7 @@ def get_renderable_object(module):
     for name in ['to_export', 'result', 'part', 'assembly']:
         if hasattr(module, name):
             candidate = getattr(module, name)
-            if isinstance(candidate, (Shape, Sketch)):
+            if isinstance(candidate, (Shape, Part, Sketch, Curve)):
                 return candidate
 
     # 2. Dynamic Discovery: Scan all variables in the module
