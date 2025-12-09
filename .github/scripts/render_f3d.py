@@ -73,6 +73,7 @@ def render_with_f3d(file_path):
             #"--raytracing", # raytracing looked black
             #"--raytracing-samples=32",
             "--anti-aliasing",
+            "--anti-aliasing-mode=ssaa",
             "--up=+Z",
             "--verbose=quiet" 
         ]
