@@ -2,6 +2,7 @@ import os
 import subprocess
 import importlib.util
 from pathlib import Path
+print(f"  Importing build123d ...")
 from build123d import * # Import everything to check types
 from build123d import Shape
 
@@ -69,6 +70,7 @@ def render_with_f3d(file_path):
         cmd = [
             "f3d", temp_step,
             f"--output={output_png}",
+            "--filename=0",
             "--resolution=1024,768",
             "--hdri-ambient",
             "--camera-zoom-factor=1.1",
