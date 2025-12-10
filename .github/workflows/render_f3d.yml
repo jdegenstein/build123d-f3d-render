@@ -25,13 +25,15 @@ jobs:
 
       # 2. Install F3D Manually (Direct Binary)
       - name: Install F3D v3.3.0 (Raytracing)
+        env:
+          F3D_NAME: "F3D-3.3.0-Linux-x86_64-raytracing"
         run: |
-          wget "https://github.com/f3d-app/f3d/releases/download/v3.3.0/F3D-3.3.0-Linux-x86_64-raytracing.tar.gz" -O f3d.tar.gz
-          tar -xvf f3d.tar.gz
+          wget --progress=bar:force:noscroll "https://github.com/f3d-app/f3d/releases/download/v3.3.0/${{ env.F3D_NAME }}" -O f3d.tar.gz
+          tar -xf f3d.tar.gz
           # Move binary and libs to system locations so 'f3d' command works globally
-          sudo cp -r F3D-3.3.0-Linux-x86_64-raytracing/* /usr/local/
+          sudo cp -r ${{ env.F3D_NAME }}/* /usr/local/
           # prevent F3D images from being used later by commit renders by deleting F3D folder
-          sudo rm -rf F3D-3.3.0-Linux-x86_64-raytracing/
+          sudo rm -rf ${{ env.F3D_NAME }}/
           f3d --version
           f3d --help
 
@@ -56,7 +58,7 @@ jobs:
 
       # 6. Commit Images
       - name: Commit Renders
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "📸 Auto-generate F3D renders"
           file_pattern: "**/*.png"
