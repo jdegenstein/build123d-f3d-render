@@ -28,7 +28,7 @@ jobs:
         env:
           F3D_NAME: "F3D-3.3.0-Linux-x86_64-raytracing"
         run: |
-          wget --progress=bar:force:noscroll "https://github.com/f3d-app/f3d/releases/download/v3.3.0/${{ env.F3D_NAME }}" -O f3d.tar.gz
+          wget --progress=bar:force:noscroll "https://github.com/f3d-app/f3d/releases/download/v3.3.0/${{ env.F3D_NAME }}.tar.gz" -O f3d.tar.gz
           tar -xf f3d.tar.gz
           # Move binary and libs to system locations so 'f3d' command works globally
           sudo cp -r ${{ env.F3D_NAME }}/* /usr/local/
