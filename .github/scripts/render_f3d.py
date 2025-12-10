@@ -70,10 +70,20 @@ def render_with_f3d(file_path):
             "f3d", temp_step,
             f"--output={output_png}",
             "--resolution=1024,768",
-            "--raytracing", # raytracing looked black
-            "--raytracing-samples=32",
+            "--hdri-ambient",
+            "--camera-zoom-factor=1.1",
+            "-DSTEP.linear_deflection=0.01",
+            "-DSTEP.angular_deflection=0.05",
+            "-DSTEP.read_wire=1", #busier output, but I like the "BREP look"
+            "-DSTEP.relative_deflection=1",
+            # "--raytracing", # raytracing looked black
+            # "--raytracing-samples=32",
             "--anti-aliasing",
             "--anti-aliasing-mode=ssaa",
+            "--ambient-occlusion",
+            "--tone-mapping",
+            "--no-background",
+            "--roughness=.5",
             "--up=+Z",
             "--verbose=quiet" 
         ]
