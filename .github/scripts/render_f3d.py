@@ -73,7 +73,7 @@ def render_with_f3d(file_path):
             "--filename=0",
             "--resolution=1024,768",
             "--hdri-ambient",
-            "--camera-zoom-factor=1.1",
+            "--camera-zoom-factor=1.0",
             "-DSTEP.linear_deflection=0.01",
             "-DSTEP.angular_deflection=0.05",
             "-DSTEP.read_wire=1", #busier output, but I like the "BREP look"
